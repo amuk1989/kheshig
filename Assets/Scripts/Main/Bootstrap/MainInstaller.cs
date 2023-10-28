@@ -6,6 +6,7 @@ namespace Main.Bootstrap
     {
         public override void InstallBindings()
         {
+            Container.Install<DOTSIntsaller>();
             Container.Install<ConfigInstaller>();
         }
     }

@@ -1,4 +1,5 @@
-﻿using Spawner.Data;
+﻿using Character.Data;
+using Spawner.Data;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -29,18 +30,21 @@ namespace Spawner.Systems
             var entityCommandBuffer = entityCommandBufferSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
             if (!SystemAPI.TryGetSingleton<SpawnerData>(out var spawner)) return;
+            if (!SystemAPI.TryGetSingleton<CharacterData>(out var character)) return;
 
             foreach (var (request, entity) in SystemAPI.Query<RefRW<CharacterSpawnRequest>>().WithEntityAccess())
             {
                 var random = new Random((uint)SystemAPI.Time.ElapsedTime + 1);
 
-                var randomAngle = random.NextInt(360);
+                var randomAngle = random.NextFloat() * 2 * math.PI;
                 var randomRad = random.NextFloat() * spawner.Range;
 
                 var position = new float3(randomRad * math.sin(randomAngle) + spawner.SpawnPosition.x, 
                     spawner.SpawnPosition.y, randomRad * math.cos(randomAngle) + spawner.SpawnPosition.z);
+
+                var characterEntity = entityCommandBuffer.Instantiate(character.Prefab);
+                entityCommandBuffer.SetComponent(characterEntity, LocalTransform.FromPosition(position));
                 
-                entityCommandBuffer.SetComponent(entity, LocalTransform.FromPosition(position));
                 entityCommandBuffer.RemoveComponent<CharacterSpawnRequest>(entity);
             }
         }

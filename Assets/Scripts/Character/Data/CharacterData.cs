@@ -5,6 +5,6 @@ namespace Character.Data
 {
     public struct CharacterData:IComponentData
     {
-        
+        public Entity Prefab;
     }
 }
