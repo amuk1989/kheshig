@@ -29,11 +29,13 @@ namespace Spawner.Systems
             var entityCommandBufferSystem = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
             var entityCommandBuffer = entityCommandBufferSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
-            if (!SystemAPI.TryGetSingleton<SpawnerData>(out var spawner)) return;
-            if (!SystemAPI.TryGetSingleton<CharacterData>(out var character)) return;
-
+            if (!SystemAPI.TryGetSingleton<SpawnerData>(out var spawner) || 
+                !SystemAPI.TryGetSingleton<CharacterData>(out var character)) return;
+            
             foreach (var (request, entity) in SystemAPI.Query<RefRW<CharacterSpawnRequest>>().WithEntityAccess())
             {
+                if (SystemAPI.HasSingleton<PlayerData>() && request.ValueRO.IsLocalPlayer) continue;
+                    
                 var random = new Random((uint)SystemAPI.Time.ElapsedTime + 1);
 
                 var randomAngle = random.NextFloat() * 360;
@@ -43,8 +45,9 @@ namespace Spawner.Systems
                     spawner.SpawnPosition.y, randomRad * math.cos(randomAngle) + spawner.SpawnPosition.z);
 
                 var characterEntity = entityCommandBuffer.Instantiate(character.Prefab);
-                entityCommandBuffer.SetComponent(characterEntity, LocalTransform.FromPosition(position));
                 
+                entityCommandBuffer.SetComponent(characterEntity, LocalTransform.FromPosition(position));
+                entityCommandBuffer.AddComponent<PlayerData>(characterEntity);
                 entityCommandBuffer.RemoveComponent<CharacterSpawnRequest>(entity);
             }
         }

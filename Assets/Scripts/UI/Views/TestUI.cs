@@ -9,7 +9,7 @@ using Zenject;
 
 namespace UI.Views
 {
-    public class TestUI : MonoBehaviour
+    public class TestUI : MonoBehaviour, IDisposable
     {
         [SerializeField] private Button _start;
 
@@ -27,9 +27,16 @@ namespace UI.Views
                 .OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    _entityManager.CreateEntity(typeof(CharacterSpawnRequest));
+                    var entity = _entityManager.CreateEntity(typeof(CharacterSpawnRequest));
+                    _entityManager.SetComponentData(entity, new CharacterSpawnRequest() {IsLocalPlayer = true});
+                    Dispose();
                 })
                 .AddTo(this);
+        }
+
+        public void Dispose()
+        {
+            Destroy(gameObject);
         }
     }
 }
