@@ -36,7 +36,7 @@ namespace Spawner.Systems
             {
                 var random = new Random((uint)SystemAPI.Time.ElapsedTime + 1);
 
-                var randomAngle = random.NextFloat() * 2 * math.PI;
+                var randomAngle = random.NextFloat() * 360;
                 var randomRad = random.NextFloat() * spawner.Range;
 
                 var position = new float3(randomRad * math.sin(randomAngle) + spawner.SpawnPosition.x, 
