@@ -1,5 +1,6 @@
 ﻿using Character.Configs;
 using Character.Data;
+using Player.Data;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -11,9 +12,9 @@ namespace Character.Systems
     {
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<CharacterSpecificationRequest>();
+            state.RequireForUpdate<CharacterUpgradeRequest>();
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            state.RequireForUpdate(state.GetEntityQuery(ComponentType.ReadOnly<PlayerData>(), 
+            state.RequireForUpdate(state.GetEntityQuery(ComponentType.ReadOnly<PlayerPrefabData>(), 
                 ComponentType.ReadWrite<CharacterSpecificationData>()));
         }
 
@@ -28,17 +29,17 @@ namespace Character.Systems
             var entityCommandBufferSystem = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
             var entityCommandBuffer = entityCommandBufferSystem.CreateCommandBuffer(state.WorldUnmanaged);
             
-            var player = SystemAPI.GetSingletonEntity<PlayerData>();
+            var player = SystemAPI.GetSingletonEntity<PlayerPrefabData>();
             var currentSpecification = SystemAPI.GetComponentRO<CharacterSpecificationData>(player).ValueRO;
             
-            foreach (var (request, entity) in SystemAPI.Query<RefRO<CharacterSpecificationRequest>>().WithEntityAccess())
+            foreach (var (request, entity) in SystemAPI.Query<RefRO<CharacterUpgradeRequest>>().WithEntityAccess())
             {
                 entityCommandBuffer.SetComponent(player, new CharacterSpecificationData()
                 {
-                    Power = math.clamp(currentSpecification.Power + request.ValueRO.Power,0f,100f),
-                    Endurance = math.clamp(currentSpecification.Endurance + request.ValueRO.Endurance,0f,100f),
-                    Intelligence = math.clamp(currentSpecification.Intelligence + request.ValueRO.Intelligence, 0f, 100f),
-                    Speed = math.clamp(currentSpecification.Speed + request.ValueRO.Speed, 0f, 100f),
+                    Power = currentSpecification.Power + request.ValueRO.Power,
+                    Endurance = currentSpecification.Endurance + request.ValueRO.Endurance,
+                    Intelligence = currentSpecification.Intelligence + request.ValueRO.Intelligence,
+                    Speed = currentSpecification.Speed + request.ValueRO.Speed,
                     Reputation = currentSpecification.Reputation + request.ValueRO.Reputation,
                 });
                 

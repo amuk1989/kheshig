@@ -2,7 +2,7 @@
 
 namespace Character.Data
 {
-    public struct CharacterSpecificationRequest:IComponentData
+    public struct CharacterUpgradeRequest:IComponentData
     {
         public float Power;
         public float Endurance;

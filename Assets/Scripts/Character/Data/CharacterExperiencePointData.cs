@@ -2,7 +2,7 @@
 
 namespace Character.Data
 {
-    public struct PlayerData:IComponentData
+    public struct CharacterExperiencePointData: IComponentData
     {
         
     }
