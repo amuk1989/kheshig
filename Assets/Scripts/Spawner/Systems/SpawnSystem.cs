@@ -31,7 +31,7 @@ namespace Spawner.Systems
             var entityCommandBuffer = entityCommandBufferSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
             if (!SystemAPI.TryGetSingleton<SpawnerData>(out var spawner) || 
-                !SystemAPI.TryGetSingleton<CharacterData>(out var character)) return;
+                !SystemAPI.TryGetSingleton<CharacterOriginalData>(out var character)) return;
             
             foreach (var (request, entity) in SystemAPI.Query<RefRW<CharacterSpawnRequest>>().WithEntityAccess())
             {
@@ -49,6 +49,7 @@ namespace Spawner.Systems
                 
                 entityCommandBuffer.SetComponent(characterEntity, LocalTransform.FromPosition(position));
                 if (request.ValueRO.IsLocalPlayer) entityCommandBuffer.AddComponent<PlayerPrefabData>(characterEntity);
+                entityCommandBuffer.AddComponent<CharacterData>(characterEntity);
                 entityCommandBuffer.DestroyEntity(entity);
             }
         }

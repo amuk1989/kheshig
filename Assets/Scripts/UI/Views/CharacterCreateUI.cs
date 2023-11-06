@@ -9,9 +9,13 @@ using Zenject;
 
 namespace UI.Views
 {
-    public class TestUI : MonoBehaviour, IDisposable
+    public class CharacterCreateUI : BaseUI
     {
         [SerializeField] private Button _start;
+        [SerializeField] private SliderWithIndicator _powerSlider;
+        [SerializeField] private SliderWithIndicator _enduranceSlider;
+        [SerializeField] private SliderWithIndicator _intelligenceSlider;
+        [SerializeField] private SliderWithIndicator _speedSlider;
 
         private EntityManager _entityManager;
 
@@ -32,11 +36,6 @@ namespace UI.Views
                     Dispose();
                 })
                 .AddTo(this);
-        }
-
-        public void Dispose()
-        {
-            Destroy(gameObject);
         }
     }
 }
