@@ -23,10 +23,10 @@ namespace UI.Services
 
         public void Initialize()
         {
-            CreateWindowFromResource(UIConsts.StartMenu);
+            GetOrCreateWindowFromResource(UIConsts.StartMenu);
         }
 
-        public BaseUI CreateWindowFromResource(string path)
+        public BaseUI GetOrCreateWindowFromResource(string path)
         {
             if (_windows.TryGetValue(path, out var window))
             {
@@ -38,6 +38,32 @@ namespace UI.Services
             }
             
             return _windows[path];
+        }
+
+        public void HideWindow<TWindow>() where TWindow : BaseUI
+        {
+            foreach (var baseUI in _windows.Values)
+            {
+                var window = baseUI as TWindow;
+                if (window == null) continue;
+                window.Disable();
+                return;
+            }
+        }
+
+        public void DestroyWindow<TWindow>() where TWindow : BaseUI
+        {
+            var destroyId = string.Empty;
+            foreach (var baseUI in _windows)
+            {
+                var window = baseUI.Value as TWindow;
+                if (window == null) continue;
+                window.Dispose();
+                destroyId = baseUI.Key;
+                break;
+            }
+
+            if (_windows.ContainsKey(destroyId)) _windows.Remove(destroyId);
         }
     }
 }

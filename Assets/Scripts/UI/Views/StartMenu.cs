@@ -24,7 +24,11 @@ namespace UI.Views
         {
             _newGameButton
                 .OnClickAsObservable()
-                .Subscribe(_ => _uiService.CreateWindowFromResource(UIConsts.CharacterUpdateUI))
+                .Subscribe(_ =>
+                {
+                    _uiService.GetOrCreateWindowFromResource(UIConsts.CharacterUpdateUI);
+                    _uiService.DestroyWindow<StartMenu>();
+                })
                 .AddTo(this);
         }
     }
