@@ -22,7 +22,7 @@ namespace Character.Authorings
         {
             var authoringEntity = GetEntity(TransformUsageFlags.None);
             
-            AddComponent(authoringEntity, new CharacterData()
+            AddComponent(authoringEntity, new CharacterOriginalData()
             {
                 Prefab = GetEntity(authoring.CharacterPrefab, TransformUsageFlags.Dynamic)
             });

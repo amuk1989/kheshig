@@ -1,4 +1,5 @@
 ﻿using Character.Data;
+using Player.Data;
 using Spawner.Data;
 using Unity.Burst;
 using Unity.Entities;
@@ -30,11 +31,11 @@ namespace Spawner.Systems
             var entityCommandBuffer = entityCommandBufferSystem.CreateCommandBuffer(state.WorldUnmanaged);
 
             if (!SystemAPI.TryGetSingleton<SpawnerData>(out var spawner) || 
-                !SystemAPI.TryGetSingleton<CharacterData>(out var character)) return;
+                !SystemAPI.TryGetSingleton<CharacterOriginalData>(out var character)) return;
             
             foreach (var (request, entity) in SystemAPI.Query<RefRW<CharacterSpawnRequest>>().WithEntityAccess())
             {
-                if (SystemAPI.HasSingleton<PlayerData>() && request.ValueRO.IsLocalPlayer) continue;
+                if (SystemAPI.HasSingleton<PlayerPrefabData>() && request.ValueRO.IsLocalPlayer) continue;
                     
                 var random = new Random((uint)SystemAPI.Time.ElapsedTime + 1);
 
@@ -47,8 +48,9 @@ namespace Spawner.Systems
                 var characterEntity = entityCommandBuffer.Instantiate(character.Prefab);
                 
                 entityCommandBuffer.SetComponent(characterEntity, LocalTransform.FromPosition(position));
-                entityCommandBuffer.AddComponent<PlayerData>(characterEntity);
-                entityCommandBuffer.RemoveComponent<CharacterSpawnRequest>(entity);
+                if (request.ValueRO.IsLocalPlayer) entityCommandBuffer.AddComponent<PlayerPrefabData>(characterEntity);
+                entityCommandBuffer.AddComponent<CharacterData>(characterEntity);
+                entityCommandBuffer.DestroyEntity(entity);
             }
         }
     }

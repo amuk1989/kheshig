@@ -1,4 +1,5 @@
-﻿using Zenject;
+﻿using UI.Bootstrap;
+using Zenject;
 
 namespace Main.Bootstrap
 {
@@ -8,6 +9,8 @@ namespace Main.Bootstrap
         {
             Container.Install<DOTSIntsaller>();
             Container.Install<ConfigInstaller>();
+            
+            Container.Install<UIInstaller>();
         }
     }
 }
