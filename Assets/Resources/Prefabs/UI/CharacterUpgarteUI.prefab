@@ -850,10 +850,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _start: {fileID: 5560449407799344819}
-  _powerSlider: {fileID: 1837548579431158930}
-  _enduranceSlider: {fileID: 5129114351809513997}
-  _intelligenceSlider: {fileID: 7080320685322299601}
-  _speedSlider: {fileID: 6611062066839822365}
+  powerCharacterPointsSlider: {fileID: 1837548579431158930}
+  enduranceCharacterPointsSlider: {fileID: 5129114351809513997}
+  intelligenceCharacterPointsSlider: {fileID: 7080320685322299601}
+  speedCharacterPointsSlider: {fileID: 6611062066839822365}
 --- !u!1 &9125256469115027762
 GameObject:
   m_ObjectHideFlags: 0
