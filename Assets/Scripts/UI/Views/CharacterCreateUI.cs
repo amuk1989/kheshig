@@ -36,8 +36,19 @@ namespace UI.Views
                 .OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    var entity = _entityManager.CreateEntity(typeof(CharacterSpawnRequest));
-                    _entityManager.SetComponentData(entity, new CharacterSpawnRequest() {IsLocalPlayer = true});
+                    var spawnEntity = _entityManager.CreateEntity(typeof(CharacterSpawnRequest));
+                    _entityManager.SetComponentData(spawnEntity, new CharacterSpawnRequest() {IsLocalPlayer = true});
+
+                    var upgradeEntity = _entityManager.CreateEntity(typeof(CharacterUpgradeRequest));
+                    _entityManager.SetComponentData(upgradeEntity,
+                        new CharacterUpgradeRequest()
+                        {
+                            Endurance = enduranceCharacterPointsSlider.Value,
+                            Intelligence = intelligenceCharacterPointsSlider.Value,
+                            Power = powerCharacterPointsSlider.Value,
+                            Reputation = 0,
+                            Speed = speedCharacterPointsSlider.Value
+                        });
                     
                     _uiService.DestroyWindow<CharacterCreateUI>();
                 })
