@@ -29,13 +29,12 @@ namespace Character.Systems
             var entityCommandBufferSystem = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
             var entityCommandBuffer = entityCommandBufferSystem.CreateCommandBuffer(state.WorldUnmanaged);
             
-            var player = SystemAPI.GetSingletonEntity<PlayerPrefabData>();
             var character = SystemAPI.GetSingletonEntity<ThirdPersonPlayer>();
-            var currentSpecification = SystemAPI.GetComponentRO<CharacterSpecificationData>(player).ValueRO;
+            var currentSpecification = SystemAPI.GetComponentRO<CharacterSpecificationData>(character).ValueRO;
             
             foreach (var (request, entity) in SystemAPI.Query<RefRO<CharacterUpgradeRequest>>().WithEntityAccess())
             {
-                entityCommandBuffer.SetComponent(player, new CharacterSpecificationData()
+                entityCommandBuffer.SetComponent(character, new CharacterSpecificationData()
                 {
                     Power = currentSpecification.Power + request.ValueRO.Power,
                     Endurance = currentSpecification.Endurance + request.ValueRO.Endurance,
