@@ -30,7 +30,7 @@ namespace Character.Systems
             var entityCommandBuffer = entityCommandBufferSystem.CreateCommandBuffer(state.WorldUnmanaged);
             
             var player = SystemAPI.GetSingletonEntity<PlayerPrefabData>();
-            var character = SystemAPI.GetSingleton<ThirdPersonCharacterComponent>();
+            var character = SystemAPI.GetSingletonEntity<ThirdPersonPlayer>();
             var currentSpecification = SystemAPI.GetComponentRO<CharacterSpecificationData>(player).ValueRO;
             
             foreach (var (request, entity) in SystemAPI.Query<RefRO<CharacterUpgradeRequest>>().WithEntityAccess())
