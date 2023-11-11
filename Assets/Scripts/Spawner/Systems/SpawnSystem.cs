@@ -35,6 +35,8 @@ namespace Spawner.Systems
             
             foreach (var (request, entity) in SystemAPI.Query<RefRW<CharacterSpawnRequest>>().WithEntityAccess())
             {
+                entityCommandBuffer.DestroyEntity(entity);
+                
                 if (SystemAPI.HasSingleton<PlayerPrefabData>() && request.ValueRO.IsLocalPlayer) continue;
                     
                 var random = new Random((uint)SystemAPI.Time.ElapsedTime + 1);
@@ -48,9 +50,10 @@ namespace Spawner.Systems
                 var characterEntity = entityCommandBuffer.Instantiate(character.Prefab);
                 
                 entityCommandBuffer.SetComponent(characterEntity, LocalTransform.FromPosition(position));
-                if (request.ValueRO.IsLocalPlayer) entityCommandBuffer.AddComponent<PlayerPrefabData>(characterEntity);
-                entityCommandBuffer.AddComponent<CharacterData>(characterEntity);
-                entityCommandBuffer.DestroyEntity(entity);
+                
+                if (!request.ValueRO.IsLocalPlayer) return;
+                
+                entityCommandBuffer.AddComponent<PlayerPrefabData>(characterEntity);
             }
         }
     }
