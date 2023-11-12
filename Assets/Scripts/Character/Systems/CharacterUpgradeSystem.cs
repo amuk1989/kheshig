@@ -1,5 +1,6 @@
 ﻿using Character.Configs;
 using Character.Data;
+using Main.Data;
 using Player.Data;
 using Unity.Burst;
 using Unity.Entities;
@@ -30,7 +31,10 @@ namespace Character.Systems
             
             var character = SystemAPI.GetSingleton<ThirdPersonPlayer>().ControlledCharacter;
             var currentSpecification = SystemAPI.GetComponentRO<CharacterSpecificationData>(character).ValueRO;
-            
+
+            if (!SystemAPI.TryGetSingletonEntity<ConfigTag>(out var configEntity)) return;
+            var characterConfig = SystemAPI.GetComponent<CharacterConfigData>(configEntity);
+
             foreach (var (request, entity) in SystemAPI.Query<RefRO<CharacterUpgradeRequest>>().WithEntityAccess())
             {
                 entityCommandBuffer.SetComponent(character, new CharacterSpecificationData()
@@ -44,6 +48,12 @@ namespace Character.Systems
                 
                 entityCommandBuffer.DestroyEntity(entity);
             }
+        }
+
+        private int CalculateSpeed(CharacterConfigData configData, int currentSpeed, int speedPoints)
+        {
+            
+            return 50;
         }
     }
 }

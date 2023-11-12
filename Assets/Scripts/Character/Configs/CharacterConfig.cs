@@ -14,5 +14,10 @@ namespace Character.Configs
     [Serializable]
     public struct CharacterConfigData : IConfigData, IComponentData
     {
+        [SerializeField] private float _minSpeed;
+        [SerializeField] private float _maxSpeed;
+
+        public float MinSpeed => _minSpeed;
+        public float MaxSpeed => _maxSpeed;
     }
 }
