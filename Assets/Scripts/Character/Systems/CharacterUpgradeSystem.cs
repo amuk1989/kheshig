@@ -14,8 +14,7 @@ namespace Character.Systems
         {
             state.RequireForUpdate<CharacterUpgradeRequest>();
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-            state.RequireForUpdate(state.GetEntityQuery(ComponentType.ReadOnly<PlayerPrefabData>(), 
-                ComponentType.ReadWrite<CharacterSpecificationData>()));
+            state.RequireForUpdate(state.GetEntityQuery(ComponentType.ReadWrite<CharacterSpecificationData>()));
         }
 
         [BurstCompile]

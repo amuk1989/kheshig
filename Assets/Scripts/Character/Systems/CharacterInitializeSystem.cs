@@ -22,6 +22,7 @@ namespace Character.Systems
             foreach (var (playerData, entity) in SystemAPI.Query<RefRO<ThirdPersonPlayer>>().WithEntityAccess())
             {
                 entityCommandBuffer.AddComponent<CharacterData>(entity);
+                entityCommandBuffer.AddComponent<CharacterSpecificationData>(entity);
             }
         }
     }

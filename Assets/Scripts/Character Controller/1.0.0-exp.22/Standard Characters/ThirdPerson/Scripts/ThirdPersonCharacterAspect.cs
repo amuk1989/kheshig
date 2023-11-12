@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Character.Data;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -35,12 +36,14 @@ public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicC
     public readonly KinematicCharacterAspect CharacterAspect;
     public readonly RefRW<ThirdPersonCharacterComponent> CharacterComponent;
     public readonly RefRW<ThirdPersonCharacterControl> CharacterControl;
+    public readonly RefRW<CharacterSpecificationData> SpecificationData;
 
     public void PhysicsUpdate(ref ThirdPersonCharacterUpdateContext context, ref KinematicCharacterUpdateContext baseContext)
     {
         ref ThirdPersonCharacterComponent characterComponent = ref CharacterComponent.ValueRW;
         ref KinematicCharacterBody characterBody = ref CharacterAspect.CharacterBody.ValueRW;
         ref float3 characterPosition = ref CharacterAspect.LocalTransform.ValueRW.Position;
+        ref CharacterSpecificationData specificationData = ref SpecificationData.ValueRW;
 
         // First phase of default character update
         CharacterAspect.Update_Initialize(in this, ref context, ref baseContext, ref characterBody, baseContext.Time.DeltaTime);

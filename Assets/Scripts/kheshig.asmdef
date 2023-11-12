@@ -14,7 +14,7 @@
         "Unity.Physics",
         "Unity.Physics.Hybrid",
         "Unity.TextMeshPro",
-        "DOTSCharacterController"
+        "Unity.CharacterController"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

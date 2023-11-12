@@ -1,8 +1,10 @@
-﻿using Unity.Entities;
+﻿using System;
+using Unity.Entities;
 
 namespace Character.Data
 {
-    internal struct CharacterSpecificationData:IComponentData
+    [Serializable]
+    public struct CharacterSpecificationData:IComponentData
     {
         internal float Power;
         internal float Endurance;

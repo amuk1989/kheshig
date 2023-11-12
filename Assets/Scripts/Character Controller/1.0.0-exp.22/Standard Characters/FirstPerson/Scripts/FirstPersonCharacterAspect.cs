@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Character.Data;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -35,12 +36,14 @@ public readonly partial struct FirstPersonCharacterAspect : IAspect, IKinematicC
     public readonly KinematicCharacterAspect CharacterAspect;
     public readonly RefRW<FirstPersonCharacterComponent> CharacterComponent;
     public readonly RefRW<FirstPersonCharacterControl> CharacterControl;
+    // public readonly RefRW<CharacterSpecificationData> CharacterSpecification;
 
     public void PhysicsUpdate(ref FirstPersonCharacterUpdateContext context, ref KinematicCharacterUpdateContext baseContext)
     {
         ref FirstPersonCharacterComponent characterComponent = ref CharacterComponent.ValueRW;
         ref KinematicCharacterBody characterBody = ref CharacterAspect.CharacterBody.ValueRW;
         ref float3 characterPosition = ref CharacterAspect.LocalTransform.ValueRW.Position;
+        // ref CharacterSpecificationData specificationData = ref CharacterSpecification.ValueRW;
         
         // First phase of default character update
         CharacterAspect.Update_Initialize(in this, ref context, ref baseContext, ref characterBody, baseContext.Time.DeltaTime);
@@ -65,6 +68,7 @@ public readonly partial struct FirstPersonCharacterAspect : IAspect, IKinematicC
         ref KinematicCharacterBody characterBody = ref CharacterAspect.CharacterBody.ValueRW;
         ref FirstPersonCharacterComponent characterComponent = ref CharacterComponent.ValueRW;
         ref FirstPersonCharacterControl characterControl = ref CharacterControl.ValueRW;
+        // ref CharacterSpecificationData characterSpecification = ref CharacterSpecification.ValueRW;
 
         // Rotate move input and velocity to take into account parent rotation
         if(characterBody.ParentEntity != Entity.Null)
