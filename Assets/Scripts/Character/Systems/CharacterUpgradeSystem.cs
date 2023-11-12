@@ -5,6 +5,7 @@ using Player.Data;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace Character.Systems
 {
@@ -42,7 +43,7 @@ namespace Character.Systems
                     Power = currentSpecification.Power + request.ValueRO.Power,
                     Endurance = currentSpecification.Endurance + request.ValueRO.Endurance,
                     Intelligence = currentSpecification.Intelligence + request.ValueRO.Intelligence,
-                    Speed = currentSpecification.Speed + request.ValueRO.SpeedPoints,
+                    Speed = CalculateSpeed(characterConfig, currentSpecification.Speed, request.ValueRO.SpeedPoints),
                     Reputation = currentSpecification.Reputation + request.ValueRO.Reputation,
                 });
                 
@@ -50,10 +51,11 @@ namespace Character.Systems
             }
         }
 
-        private int CalculateSpeed(CharacterConfigData configData, int currentSpeed, int speedPoints)
+        private float CalculateSpeed(CharacterConfigData configData, float currentSpeed, int speedPoints)
         {
-            
-            return 50;
+            var speedRange = configData.MaxSpeed - configData.MinSpeed;
+            currentSpeed = Mathf.Clamp(currentSpeed, configData.MinSpeed, configData.MaxSpeed);
+            return currentSpeed + (speedRange / 100f * speedPoints);
         }
     }
 }

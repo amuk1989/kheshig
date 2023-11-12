@@ -16,7 +16,7 @@ namespace Main.Bootstrap
 
         public override void InstallBindings()
         {
-            var entityManager = Container.Resolve<EntityManager>();
+            var entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
             var entity =  entityManager.CreateSingleton<ConfigTag>();
             
             entityManager.AddComponentData(entity, _characterConfigData);

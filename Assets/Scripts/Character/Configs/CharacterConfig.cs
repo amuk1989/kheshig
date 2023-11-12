@@ -16,8 +16,10 @@ namespace Character.Configs
     {
         [SerializeField] private float _minSpeed;
         [SerializeField] private float _maxSpeed;
+        [SerializeField] private float _defaultExperience;
 
         public float MinSpeed => _minSpeed;
         public float MaxSpeed => _maxSpeed;
+        public float DefaultExperience => _defaultExperience;
     }
 }

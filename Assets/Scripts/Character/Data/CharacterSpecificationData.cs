@@ -6,10 +6,10 @@ namespace Character.Data
     [Serializable]
     public struct CharacterSpecificationData:IComponentData
     {
-        internal int Power;
-        internal int Endurance;
-        internal int Speed;
-        internal int Intelligence;
-        internal int Reputation;
+        public int Power;
+        public int Endurance;
+        public float Speed;
+        public int Intelligence;
+        public int Reputation;
     }
 }
