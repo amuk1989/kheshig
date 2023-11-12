@@ -43,7 +43,6 @@ public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicC
         ref ThirdPersonCharacterComponent characterComponent = ref CharacterComponent.ValueRW;
         ref KinematicCharacterBody characterBody = ref CharacterAspect.CharacterBody.ValueRW;
         ref float3 characterPosition = ref CharacterAspect.LocalTransform.ValueRW.Position;
-        ref CharacterSpecificationData specificationData = ref SpecificationData.ValueRW;
 
         // First phase of default character update
         CharacterAspect.Update_Initialize(in this, ref context, ref baseContext, ref characterBody, baseContext.Time.DeltaTime);
@@ -68,6 +67,7 @@ public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicC
         ref KinematicCharacterBody characterBody = ref CharacterAspect.CharacterBody.ValueRW;
         ref ThirdPersonCharacterComponent characterComponent = ref CharacterComponent.ValueRW;
         ref ThirdPersonCharacterControl characterControl = ref CharacterControl.ValueRW;
+        ref CharacterSpecificationData specificationData = ref SpecificationData.ValueRW;
 
         // Rotate move input and velocity to take into account parent rotation
         if(characterBody.ParentEntity != Entity.Null)
@@ -79,7 +79,7 @@ public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicC
         if (characterBody.IsGrounded)
         {
             // Move on ground
-            float3 targetVelocity = characterControl.MoveVector * characterComponent.GroundMaxSpeed;
+            float3 targetVelocity = characterControl.MoveVector * specificationData.Speed;
             CharacterControlUtilities.StandardGroundMove_Interpolated(ref characterBody.RelativeVelocity, targetVelocity, characterComponent.GroundedMovementSharpness, deltaTime, characterBody.GroundingUp, characterBody.GroundHit.Normal);
 
             // Jump

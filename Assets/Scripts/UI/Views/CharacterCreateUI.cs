@@ -21,7 +21,7 @@ namespace UI.Views
 
         private EntityManager _entityManager;
         private IUIService _uiService;
-        private int _points = 10;
+        private int _points = 50;
 
         [Inject]
         private void Construct(EntityManager entityManager, IUIService uiService)
@@ -43,11 +43,11 @@ namespace UI.Views
                     _entityManager.SetComponentData(upgradeEntity,
                         new CharacterUpgradeRequest()
                         {
-                            Endurance = enduranceCharacterPointsSlider.Value,
-                            Intelligence = intelligenceCharacterPointsSlider.Value,
-                            Power = powerCharacterPointsSlider.Value,
+                            Endurance = Mathf.RoundToInt(enduranceCharacterPointsSlider.Value),
+                            Intelligence = Mathf.RoundToInt(intelligenceCharacterPointsSlider.Value),
+                            Power = Mathf.RoundToInt(powerCharacterPointsSlider.Value),
                             Reputation = 0,
-                            Speed = speedCharacterPointsSlider.Value
+                            SpeedPoints = Mathf.RoundToInt(speedCharacterPointsSlider.Value)
                         });
                     
                     _uiService.DestroyWindow<CharacterCreateUI>();

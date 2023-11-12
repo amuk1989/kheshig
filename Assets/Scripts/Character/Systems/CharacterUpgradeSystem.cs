@@ -28,7 +28,7 @@ namespace Character.Systems
             var entityCommandBufferSystem = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
             var entityCommandBuffer = entityCommandBufferSystem.CreateCommandBuffer(state.WorldUnmanaged);
             
-            var character = SystemAPI.GetSingletonEntity<ThirdPersonPlayer>();
+            var character = SystemAPI.GetSingleton<ThirdPersonPlayer>().ControlledCharacter;
             var currentSpecification = SystemAPI.GetComponentRO<CharacterSpecificationData>(character).ValueRO;
             
             foreach (var (request, entity) in SystemAPI.Query<RefRO<CharacterUpgradeRequest>>().WithEntityAccess())
@@ -38,7 +38,7 @@ namespace Character.Systems
                     Power = currentSpecification.Power + request.ValueRO.Power,
                     Endurance = currentSpecification.Endurance + request.ValueRO.Endurance,
                     Intelligence = currentSpecification.Intelligence + request.ValueRO.Intelligence,
-                    Speed = currentSpecification.Speed + request.ValueRO.Speed,
+                    Speed = currentSpecification.Speed + request.ValueRO.SpeedPoints,
                     Reputation = currentSpecification.Reputation + request.ValueRO.Reputation,
                 });
                 
