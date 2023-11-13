@@ -4,10 +4,10 @@ namespace Character.Data
 {
     public struct CharacterUpgradeRequest:IComponentData
     {
-        public float Power;
-        public float Endurance;
-        public float Speed;
-        public float Intelligence;
-        public float Reputation;
+        public int Power;
+        public int Endurance;
+        public int SpeedPoints;
+        public int Intelligence;
+        public int Reputation;
     }
 }

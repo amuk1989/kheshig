@@ -24,7 +24,7 @@ public struct ThirdPersonCharacterComponent : IComponentData
         return new ThirdPersonCharacterComponent
         {
             RotationSharpness = 25f,
-            GroundMaxSpeed = 10f,
+            GroundMaxSpeed = 20f,
             GroundedMovementSharpness = 15f,
             AirAcceleration = 50f,
             AirMaxSpeed = 10f,

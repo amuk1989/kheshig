@@ -12,3 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c87e02fd67c048f09a9175b84e013fc5, type: 3}
   m_Name: CharacterConfig
   m_EditorClassIdentifier: 
+  _data:
+    _minSpeed: 3
+    _maxSpeed: 7
+    _defaultExperience: 50

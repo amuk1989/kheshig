@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Character.Data;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.CharacterController;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
@@ -12,9 +12,10 @@ using Unity.Physics.Authoring;
 using Unity.Physics.Extensions;
 using Unity.Physics.Systems;
 using Unity.Transforms;
+using Unity.CharacterController;
 using UnityEngine;
 
-public struct ThirdPersonCharacterUpdateContext
+public struct FirstPersonCharacterUpdateContext
 {
     // Here, you may add additional global data for your character updates, such as ComponentLookups, Singletons, NativeCollections, etc...
     // The data you add here will be accessible in your character updates and all of your character "callbacks".
@@ -30,18 +31,20 @@ public struct ThirdPersonCharacterUpdateContext
     }
 }
 
-public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicCharacterProcessor<ThirdPersonCharacterUpdateContext>
+public readonly partial struct FirstPersonCharacterAspect : IAspect, IKinematicCharacterProcessor<FirstPersonCharacterUpdateContext>
 {
     public readonly KinematicCharacterAspect CharacterAspect;
-    public readonly RefRW<ThirdPersonCharacterComponent> CharacterComponent;
-    public readonly RefRW<ThirdPersonCharacterControl> CharacterControl;
+    public readonly RefRW<FirstPersonCharacterComponent> CharacterComponent;
+    public readonly RefRW<FirstPersonCharacterControl> CharacterControl;
+    // public readonly RefRW<CharacterSpecificationData> CharacterSpecification;
 
-    public void PhysicsUpdate(ref ThirdPersonCharacterUpdateContext context, ref KinematicCharacterUpdateContext baseContext)
+    public void PhysicsUpdate(ref FirstPersonCharacterUpdateContext context, ref KinematicCharacterUpdateContext baseContext)
     {
-        ref ThirdPersonCharacterComponent characterComponent = ref CharacterComponent.ValueRW;
+        ref FirstPersonCharacterComponent characterComponent = ref CharacterComponent.ValueRW;
         ref KinematicCharacterBody characterBody = ref CharacterAspect.CharacterBody.ValueRW;
         ref float3 characterPosition = ref CharacterAspect.LocalTransform.ValueRW.Position;
-
+        // ref CharacterSpecificationData specificationData = ref CharacterSpecification.ValueRW;
+        
         // First phase of default character update
         CharacterAspect.Update_Initialize(in this, ref context, ref baseContext, ref characterBody, baseContext.Time.DeltaTime);
         CharacterAspect.Update_ParentMovement(in this, ref context, ref baseContext, ref characterBody, ref characterPosition, characterBody.WasGroundedBeforeCharacterUpdate);
@@ -59,12 +62,13 @@ public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicC
         CharacterAspect.Update_ProcessStatefulCharacterHits();
     }
 
-    private void HandleVelocityControl(ref ThirdPersonCharacterUpdateContext context, ref KinematicCharacterUpdateContext baseContext)
+    private void HandleVelocityControl(ref FirstPersonCharacterUpdateContext context, ref KinematicCharacterUpdateContext baseContext)
     {
         float deltaTime = baseContext.Time.DeltaTime;
         ref KinematicCharacterBody characterBody = ref CharacterAspect.CharacterBody.ValueRW;
-        ref ThirdPersonCharacterComponent characterComponent = ref CharacterComponent.ValueRW;
-        ref ThirdPersonCharacterControl characterControl = ref CharacterControl.ValueRW;
+        ref FirstPersonCharacterComponent characterComponent = ref CharacterComponent.ValueRW;
+        ref FirstPersonCharacterControl characterControl = ref CharacterControl.ValueRW;
+        // ref CharacterSpecificationData characterSpecification = ref CharacterSpecification.ValueRW;
 
         // Rotate move input and velocity to take into account parent rotation
         if(characterBody.ParentEntity != Entity.Null)
@@ -109,27 +113,32 @@ public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicC
         }
     }
 
-    public void VariableUpdate(ref ThirdPersonCharacterUpdateContext context, ref KinematicCharacterUpdateContext baseContext)
+    public void VariableUpdate(ref FirstPersonCharacterUpdateContext context, ref KinematicCharacterUpdateContext baseContext)
     {
         ref KinematicCharacterBody characterBody = ref CharacterAspect.CharacterBody.ValueRW;
-        ref ThirdPersonCharacterComponent characterComponent = ref CharacterComponent.ValueRW;
-        ref ThirdPersonCharacterControl characterControl = ref CharacterControl.ValueRW;
+        ref FirstPersonCharacterComponent characterComponent = ref CharacterComponent.ValueRW;
+        ref FirstPersonCharacterControl characterControl = ref CharacterControl.ValueRW;
         ref quaternion characterRotation = ref CharacterAspect.LocalTransform.ValueRW.Rotation;
 
         // Add rotation from parent body to the character rotation
         // (this is for allowing a rotating moving platform to rotate your character as well, and handle interpolation properly)
         KinematicCharacterUtilities.AddVariableRateRotationFromFixedRateRotation(ref characterRotation, characterBody.RotationFromParent, baseContext.Time.DeltaTime, characterBody.LastPhysicsUpdateDeltaTime);
-        
-        // Rotate towards move direction
-        if (math.lengthsq(characterControl.MoveVector) > 0f)
-        {
-            CharacterControlUtilities.SlerpRotationTowardsDirectionAroundUp(ref characterRotation, baseContext.Time.DeltaTime, math.normalizesafe(characterControl.MoveVector), MathUtilities.GetUpFromRotation(characterRotation), characterComponent.RotationSharpness);
-        }
+
+        // Compute character & view rotations from rotation input
+        FirstPersonCharacterUtilities.ComputeFinalRotationsFromRotationDelta(
+            ref characterRotation,
+            ref characterComponent.ViewPitchDegrees,
+            characterControl.LookYawPitchDegrees,
+            0f,
+            characterComponent.MinViewAngle,
+            characterComponent.MaxViewAngle,
+            out float canceledPitchDegrees,
+            out characterComponent.ViewLocalRotation);
     }
     
     #region Character Processor Callbacks
     public void UpdateGroundingUp(
-        ref ThirdPersonCharacterUpdateContext context,
+        ref FirstPersonCharacterUpdateContext context,
         ref KinematicCharacterUpdateContext baseContext)
     {
         ref KinematicCharacterBody characterBody = ref CharacterAspect.CharacterBody.ValueRW;
@@ -138,7 +147,7 @@ public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicC
     }
     
     public bool CanCollideWithHit(
-        ref ThirdPersonCharacterUpdateContext context, 
+        ref FirstPersonCharacterUpdateContext context, 
         ref KinematicCharacterUpdateContext baseContext,
         in BasicHit hit)
     {
@@ -146,12 +155,12 @@ public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicC
     }
 
     public bool IsGroundedOnHit(
-        ref ThirdPersonCharacterUpdateContext context, 
+        ref FirstPersonCharacterUpdateContext context, 
         ref KinematicCharacterUpdateContext baseContext,
         in BasicHit hit, 
         int groundingEvaluationType)
     {
-        ThirdPersonCharacterComponent characterComponent = CharacterComponent.ValueRO;
+        FirstPersonCharacterComponent characterComponent = CharacterComponent.ValueRO;
         
         return CharacterAspect.Default_IsGroundedOnHit(
             in this,
@@ -163,7 +172,7 @@ public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicC
     }
 
     public void OnMovementHit(
-            ref ThirdPersonCharacterUpdateContext context,
+            ref FirstPersonCharacterUpdateContext context,
             ref KinematicCharacterUpdateContext baseContext,
             ref KinematicCharacterHit hit,
             ref float3 remainingMovementDirection,
@@ -173,7 +182,7 @@ public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicC
     {
         ref KinematicCharacterBody characterBody = ref CharacterAspect.CharacterBody.ValueRW;
         ref float3 characterPosition = ref CharacterAspect.LocalTransform.ValueRW.Position;
-        ThirdPersonCharacterComponent characterComponent = CharacterComponent.ValueRO;
+        FirstPersonCharacterComponent characterComponent = CharacterComponent.ValueRO;
         
         CharacterAspect.Default_OnMovementHit(
             in this,
@@ -192,7 +201,7 @@ public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicC
     }
 
     public void OverrideDynamicHitMasses(
-        ref ThirdPersonCharacterUpdateContext context,
+        ref FirstPersonCharacterUpdateContext context,
         ref KinematicCharacterUpdateContext baseContext,
         ref PhysicsMass characterMass,
         ref PhysicsMass otherMass,
@@ -202,7 +211,7 @@ public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicC
     }
 
     public void ProjectVelocityOnHits(
-        ref ThirdPersonCharacterUpdateContext context,
+        ref FirstPersonCharacterUpdateContext context,
         ref KinematicCharacterUpdateContext baseContext,
         ref float3 velocity,
         ref bool characterIsGrounded,
@@ -210,7 +219,7 @@ public readonly partial struct ThirdPersonCharacterAspect : IAspect, IKinematicC
         in DynamicBuffer<KinematicVelocityProjectionHit> velocityProjectionHits,
         float3 originalVelocityDirection)
     {
-        ThirdPersonCharacterComponent characterComponent = CharacterComponent.ValueRO;
+        FirstPersonCharacterComponent characterComponent = CharacterComponent.ValueRO;
         
         CharacterAspect.Default_ProjectVelocityOnHits(
             ref velocity,

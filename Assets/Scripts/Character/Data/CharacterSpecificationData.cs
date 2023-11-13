@@ -1,13 +1,15 @@
-﻿using Unity.Entities;
+﻿using System;
+using Unity.Entities;
 
 namespace Character.Data
 {
-    internal struct CharacterSpecificationData:IComponentData
+    [Serializable]
+    public struct CharacterSpecificationData:IComponentData
     {
-        internal float Power;
-        internal float Endurance;
-        internal float Speed;
-        internal float Intelligence;
-        internal float Reputation;
+        public int Power;
+        public int Endurance;
+        public float Speed;
+        public int Intelligence;
+        public int Reputation;
     }
 }
