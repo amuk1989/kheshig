@@ -14,6 +14,7 @@ namespace Character.Systems
     {
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<ThirdPersonPlayer>();
             state.RequireForUpdate<CharacterUpgradeRequest>();
             state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate(state.GetEntityQuery(ComponentType.ReadWrite<CharacterSpecificationData>()));

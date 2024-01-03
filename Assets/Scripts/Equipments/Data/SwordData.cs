@@ -1,8 +1,8 @@
-using Equipments.Interfaces;
+﻿using Unity.Entities;
 
 namespace Equipments.Data
 {
-    public struct SwordData: IEquipment
+    public struct SwordData : IComponentData
     {
         
     }
